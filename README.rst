@@ -160,6 +160,9 @@ Keystone fernet tokens for OpenStack Kilo release
           engine: fernet
         ...
 
+Note: Fernet is not a good idea until L. Breaks Horizon, at least in package version:
+https://bugs.launchpad.net/django-openstack-auth/+bug/1439499
+
 Read more
 =========
 
