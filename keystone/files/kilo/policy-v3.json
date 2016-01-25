@@ -4,9 +4,9 @@
     "service_role": "role:service",
     "service_or_admin": "rule:admin_required or rule:service_role",
     "owner" : "user_id:%(user_id)s or user_id:%(target.token.user_id)s",
-    "admin_or_owner": "(rule:admin_required and domain_id:%(target.token.user.domain.id)s) or rule:owner",
+    "admin_or_owner": "rule:admin_required or rule:owner",
     "admin_or_cloud_admin": "rule:admin_required or rule:cloud_admin",
-    "admin_and_matching_domain_id": "rule:admin_required and domain_id:%(domain_id)s",
+    "admin_and_matching_domain_id": "rule:admin_required",
     "service_admin_or_owner": "rule:service_or_admin or rule:owner",
 
     "default": "rule:admin_required",
@@ -37,7 +37,7 @@
 
     "admin_and_matching_target_project_domain_id": "rule:admin_required and domain_id:%(target.project.domain_id)s",
     "admin_and_matching_project_domain_id": "rule:admin_required and domain_id:%(project.domain_id)s",
-    "identity:get_project": "rule:cloud_admin or rule:admin_and_matching_target_project_domain_id",
+    "identity:get_project": "rule:owner or rule:cloud_admin or rule:admin_and_matching_target_project_domain_id",
     "identity:list_projects": "rule:cloud_admin or rule:admin_and_matching_domain_id",
     "identity:list_user_projects": "rule:owner or rule:admin_and_matching_domain_id",
     "identity:create_project": "rule:cloud_admin or rule:admin_and_matching_project_domain_id",
@@ -99,7 +99,7 @@
     "identity:update_policy": "rule:cloud_admin",
     "identity:delete_policy": "rule:cloud_admin",
 
-    "identity:change_password": "rule:owner",
+    "identity:change_password": "rule:admin_or_owner",
     "identity:check_token": "rule:admin_or_owner",
     "identity:validate_token": "rule:service_admin_or_owner",
     "identity:validate_token_head": "rule:service_or_admin",
