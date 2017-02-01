@@ -394,6 +394,32 @@ Project, users, roles enforcement with admin user
                     roles:
                     - custom-roles
 
+Multiple servers example
+
+.. code-block:: yaml
+
+  keystone:
+    client:
+      enabled: true
+      server:
+        keystone01:
+          admin:
+            host: 10.0.0.2
+            port: 5000
+            project: 'admin'
+            user: admin
+            password: 'workshop'
+            region_name: RegionOne
+            protocol: https
+        keystone02:
+          admin:
+            host: 10.0.0.3
+            port: 5000
+            project: 'admin'
+            user: admin
+            password: 'workshop'
+            region_name: RegionOne
+
 Documentation and Bugs
 ======================
 
