@@ -15,7 +15,6 @@
 {%- set protocol = 'https' %}
 {%- endif %}
 
-
 {%- if server.admin.token is defined %}
 {%- set connection_args = {'endpoint': protocol+'://'+server.admin.host+':'+server.admin.port|string+'/'+version,
                            'token': server.admin.token} %}
