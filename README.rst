@@ -383,6 +383,21 @@ Project, users, roles enforcement with admin user
             project:
               tenant01:
                 description: "test env"
+                quota:
+                  instances: 100
+                  cores: 24
+                  ram: 151200
+                  floating_ips: 50
+                  fixed_ips: -1
+                  metadata_items: 128
+                  injected_files: 5
+                  injected_file_content_bytes: 10240
+                  injected_file_path_bytes: 255
+                  key_pairs: 100
+                  security_groups: 20
+                  security_group_rules: 40
+                  server_groups: 20
+                  server_group_members: 20
                 user:
                   user01:
                     email: jdoe@domain.com
@@ -419,6 +434,50 @@ Multiple servers example
             user: admin
             password: 'workshop'
             region_name: RegionOne
+
+
+Tenant quotas
+
+.. code-block:: yaml
+
+    keystone:
+      client:
+        enabled: true
+        server:
+          keystone01:
+            admin:
+              host: 10.0.0.2
+              port: 5000
+              project: 'token'
+              user: admin
+              password: 'passwd'
+            roles:
+            - admin
+            - member
+            project:
+              tenant01:
+                description: "test env"
+                quota:
+                  instances: 100
+                  cores: 24
+                  ram: 151200
+                  floating_ips: 50
+                  fixed_ips: -1
+                  metadata_items: 128
+                  injected_files: 5
+                  injected_file_content_bytes: 10240
+                  injected_file_path_bytes: 255
+                  key_pairs: 100
+                  security_groups: 20
+                  security_group_rules: 40
+                  server_groups: 20
+                  server_group_members: 20
+
+Usage
+=====
+
+Apply state `keystone.client.service` first and then `keystone.client` state.
+
 
 Documentation and Bugs
 ======================

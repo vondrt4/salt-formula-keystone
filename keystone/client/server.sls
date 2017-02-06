@@ -102,7 +102,21 @@ keystone_{{ server_name }}_tenant_{{ tenant_name }}:
   - connection_auth_url: {{ connection_args.auth_url }}
   {%- endif %}
 
-{%- for user_name, user in tenant.get('user', {}).iteritems() %}
+{%- if tenant.quota is defined and tenant.quota is mapping %}
+
+keystone_{{ server_name }}_tenant_{{ tenant_name }}_quota:
+  novang.quota_present:
+    - profile: {{ server_name }}
+    - tenant_name: {{ tenant_name }}
+    {%- for quota_name, quota_value in tenant.quota.iteritems() %}
+    - {{ quota_name }}: {{ quota_value }}
+    {%- endfor %}
+    - require:
+      - keystone: keystone_{{ server_name }}_tenant_{{ tenant_name }}
+
+{%- endif %}
+
+{%- for user_name, user in tenant.get('user', {}).it:qeritems() %}
 
 keystone_{{ server_name }}_tenant_{{ tenant_name }}_user_{{ user_name }}:
   keystone.user_present:
