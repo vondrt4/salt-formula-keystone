@@ -116,7 +116,7 @@ keystone_{{ server_name }}_tenant_{{ tenant_name }}_quota:
 
 {%- endif %}
 
-{%- for user_name, user in tenant.get('user', {}).it:qeritems() %}
+{%- for user_name, user in tenant.get('user', {}).iteritems() %}
 
 keystone_{{ server_name }}_tenant_{{ tenant_name }}_user_{{ user_name }}:
   keystone.user_present:
