@@ -374,9 +374,11 @@ Project, users, roles enforcement with admin user
             admin:
               host: 10.0.0.2
               port: 5000
-              project: 'token'
+              project: admin
               user: admin
               password: 'passwd'
+              region_name: RegionOne
+              protocol: https
             roles:
             - admin
             - member
@@ -413,27 +415,27 @@ Multiple servers example
 
 .. code-block:: yaml
 
-  keystone:
-    client:
-      enabled: true
-      server:
-        keystone01:
-          admin:
-            host: 10.0.0.2
-            port: 5000
-            project: 'admin'
-            user: admin
-            password: 'workshop'
-            region_name: RegionOne
-            protocol: https
-        keystone02:
-          admin:
-            host: 10.0.0.3
-            port: 5000
-            project: 'admin'
-            user: admin
-            password: 'workshop'
-            region_name: RegionOne
+    keystone:
+      client:
+        enabled: true
+        server:
+          keystone01:
+            admin:
+              host: 10.0.0.2
+              port: 5000
+              project: 'admin'
+              user: admin
+              password: 'workshop'
+              region_name: RegionOne
+              protocol: https
+          keystone02:
+            admin:
+              host: 10.0.0.3
+              port: 5000
+              project: 'admin'
+              user: admin
+              password: 'workshop'
+              region_name: RegionOne
 
 
 Tenant quotas
@@ -448,9 +450,11 @@ Tenant quotas
             admin:
               host: 10.0.0.2
               port: 5000
-              project: 'token'
+              project: admin
               user: admin
               password: 'passwd'
+              region_name: RegionOne
+              protocol: https
             roles:
             - admin
             - member
