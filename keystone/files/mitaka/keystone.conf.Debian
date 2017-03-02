@@ -948,11 +948,7 @@ domain_config_dir = /etc/keystone/domains
 # Entrypoint for the identity backend driver in the keystone.identity
 # namespace. Supplied drivers are ldap and sql. (string value)
 #driver = sql
-{%- if server.get('backend', 'sql') == 'ldap' %}
-driver = ldap
-{%- else %}
-driver = sql
-{%- endif %}
+driver = {{ server.get('backend', 'sql') }}
 
 # Toggle for identity caching. This has no effect unless global caching is
 # enabled. (boolean value)
@@ -971,6 +967,10 @@ driver = sql
 # (integer value)
 #list_limit = <None>
 
+{%- if server.get("backend", "sql") == "k2k" and server.k2k is defined %}
+{%- set k2k = server.k2k %}
+{% include "keystone/files/_k2k.conf" %}
+{%- endif %}
 
 [identity_mapping]
 

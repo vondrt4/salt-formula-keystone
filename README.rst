@@ -330,6 +330,25 @@ Enable Federated keystone
           - wsgi
           - shib2
 
+Use a custom identity driver with custom options
+
+.. code-block:: yaml
+
+    keystone:
+      server:
+        backend: k2k
+        k2k:
+          auth_url: 'https://keystone.example.com/v2.0'
+          read_user: 'example_user'
+          read_pass: 'password'
+          read_tenant_id: 'admin'
+          identity_driver: 'sql'
+          id_prefix: 'k2k:'
+          domain: 'default'
+          caching: true
+          cache_time: 600
+
+
 Keystone client
 ---------------
 
