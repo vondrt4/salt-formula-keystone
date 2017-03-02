@@ -96,6 +96,28 @@ remote_collector:
         window: 60
         periods: 0
         function: last
+    keystone_failed_authentications_too_high:
+      description: 'Too many failed authentications have been detected for Keystone'
+      severity: warning
+      no_data_policy: okay
+      logical_operator: and
+      rules:
+      - metric: authentications_percent
+        value: failed
+        relational_operator: '>'
+        threshold: 80
+        window: 120
+        periods: 0
+        function: avg
+      # The second condition is to avoid triggering the alarm when the volume
+      # of authentication requests is too low to be relevant
+      - metric: authentications_rate
+        value: all
+        relational_operator: '>'
+        threshold: 0.1
+        window: 120
+        periods: 0
+        function: avg
   alarm:
     keystone_public_api_check:
       alerting: enabled
@@ -103,6 +125,12 @@ remote_collector:
       - keystone_public_api_check_failed
       dimension:
         service: keystone-public-api-check
+    keystone_failed_authentications:
+      alerting: enabled
+      triggers:
+      - keystone_failed_authentications_too_high
+      dimension:
+        service: keystone-failed-authentications
 aggregator:
   alarm_cluster:
     keystone_response_time:
@@ -148,6 +176,16 @@ aggregator:
       dimension:
         service: keystone
         nagios_host: 01-service-clusters
+    keystone_failed_authentications:
+      policy: highest_severity
+      alerting: enabled
+      match:
+        service: keystone-failed-authentications
+      members:
+      - keystone_failed_authentications
+      dimension:
+        service: keystone
+        nagios_host: 01-service-clusters
     keystone:
       policy: highest_severity
       alerting: enabled_with_notification
@@ -158,6 +196,7 @@ aggregator:
       - keystone_logs
       - keystone_public_api_endpoint
       - keystone_public_api_check
+      - keystone_failed_authentications
       dimension:
         cluster_name: keystone
         nagios_host: 00-top-clusters
