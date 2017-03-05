@@ -1,8 +1,10 @@
+
 keystone:
 # Server state
   server:
     enabled: true
     version: liberty
+    service_name: apache2
     service_token: RANDOMSTRINGTOKEN
     service_tenant: service
     admin_tenant: admin
@@ -89,9 +91,24 @@ keystone:
               admin_address: keystone
               admin_port: 35357
               admin_path: '/v2.0'
-          # TODO: enable once salt keystone module/states are fixed
-          #keystoneR2:
-            #service: keystone
+          #keystone3:
+            #name: keystone3
+            #type: identity
+            #description: OpenStack Identity Service v3
+            #endpoints:
+            #- region: RegionTwo
+              #public_address: keystone
+              #public_protocol: http
+              #public_port: 5000
+              #public_path: '/v3'
+              #internal_address: keystone
+              #internal_port: 5000
+              #internal_path: '/v3'
+              #admin_address: keystone
+              #admin_port: 35357
+              #admin_path: '/v3'
+          #keystone:
+            #name: keystone
             #type: identity
             #description: OpenStack Identity Service
             #endpoints:
@@ -107,6 +124,32 @@ keystone:
               #admin_port: 35357
               #admin_path: '/v2.0'
 # CI related dependencies
+apache:
+  server:
+    enabled: true
+    default_mpm: event
+    mpm:
+      prefork:
+        enabled: true
+        servers:
+          start: 5
+          spare:
+            min: 2
+            max: 10
+        max_requests: 0
+        max_clients: 20
+        limit: 20
+    site:
+      keystone:
+        enabled: true
+        type: keystone
+        name: wsgi
+        host:
+          name: localhost
+    pkgs:
+      - apache2
+    modules:
+      - wsgi
 mysql:
   client:
     enabled: true
