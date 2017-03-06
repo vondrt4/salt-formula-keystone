@@ -285,7 +285,7 @@ keystone_{{ service_name }}_service:
   - require:
     - keystone: keystone_roles
 
-keystone_{{ service_name }}_endpoint:
+keystone_{{ service_name }}_{{ service.get('region', 'RegionOne') }}_endpoint:
   keystone.endpoint_present:
   - name: {{ service.get('service', service_name) }}
   - publicurl: '{{ service.bind.get('public_protocol', 'http') }}://{{ service.bind.public_address }}:{{ service.bind.public_port }}{{ service.bind.public_path }}'
