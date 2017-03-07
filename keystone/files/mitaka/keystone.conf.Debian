@@ -377,11 +377,6 @@ methods = external,password,token,{{ server.websso.protocol }}
 # namespace. (string value)
 #oauth1 = <None>
 
-{% if server.websso is defined %}
-[{{ server.websso.protocol }}]
-remote_id_attribute = {{ server.websso.remote_id_attribute }}
-{%- endif %}
-
 [cache]
 
 #
@@ -843,7 +838,7 @@ admin_bind_host={% if server.bind.address is defined %}{{ server.bind.address }}
 # Entrypoint for the federation backend driver in the keystone.federation
 # namespace. (string value)
 #driver = sql
-{% if server.websso is defined %}
+{%- if server.get('websso', {}).federation_driver is defined %}
 driver = {{ server.websso.federation_driver }}
 {%- endif %}
 
@@ -855,6 +850,9 @@ driver = {{ server.websso.federation_driver }}
 # environment (e.g. if using the mod_shib plugin this value is `Shib-Identity-
 # Provider`). (string value)
 #remote_id_attribute = <None>
+{%- if server.websso is defined %}
+remote_id_attribute = {{ server.websso.remote_id_attribute }}
+{%- endif %}
 
 # A domain name that is reserved to allow federated ephemeral users to have a
 # domain concept. Note that an admin will not be able to create a domain with
@@ -868,12 +866,10 @@ driver = {{ server.websso.federation_driver }}
 # example: trusted_dashboard=http://acme.com/auth/websso
 # trusted_dashboard=http://beta.com/auth/websso (multi valued)
 #trusted_dashboard =
-{%- if server.websso is defined %}
-{%- if server.websso.trusted_dashboard is defined %}
+{%- if server.get('websso', {}).trusted_dashboard is defined %}
 {%- for dashboard in server.websso.trusted_dashboard %}
 trusted_dashboard = {{ dashboard }}
 {%- endfor %}
-{%- endif %}
 {%- endif %}
 
 # Location of Single Sign-On callback handler, will return a token to a trusted
