@@ -321,6 +321,7 @@ Enable Federated keystone
           federation_driver: keystone.contrib.federation.backends.sql.Federation
           trusted_dashboard:
             - http://${_param:proxy_vip_address_public}/horizon/auth/websso/
+          shib_url_scheme: https
     apache:
       server:
         pkgs:
