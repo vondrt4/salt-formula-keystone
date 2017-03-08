@@ -1,0 +1,32 @@
+sudo: required
+services:
+  - docker
+
+install:
+  - pip install PyYAML
+  - pip install virtualenv
+  - |
+    test -e Gemfile || cat <<EOF > Gemfile
+    source 'https://rubygems.org'
+    gem 'rake'
+    gem 'test-kitchen'
+    gem 'kitchen-docker'
+    gem 'kitchen-inspec'
+    gem 'inspec'
+    gem 'kitchen-salt', :git => 'https://github.com/epcim/kitchen-salt.git', :branch => 'dependencis-pkg-repo2'
+    #Waiting for PR#78
+    #gem 'kitchen-salt', '>=0.2.25'
+  - bundle install
+
+env:
+  - PLATFORM=trevorj/salty-whales:trusty MYSQL_VERSION='5.5'
+  - PLATFORM=trevorj/salty-whales:xenial MYSQL_VERSION='5.7'
+
+before_script:
+  - make test | tail
+
+script:
+  - bundle exec kitchen verify   single -t tests/integration
+  - bundle exec kitchen converge under-apache | tail
+  - bundle exec kitchen exec     under-apache -c "sudo service mysql start && sudo service apache2 start && keystone-manage db_sync && sleep 1"
+  - bundle exec kitchen verify   under-apache -t tests/integration
