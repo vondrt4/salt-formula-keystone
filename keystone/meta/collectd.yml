@@ -18,6 +18,7 @@ remote_plugin:
     username: {{ server.admin_name }}
     password: {{ server.admin_password }}
     tenant: {{ server.admin_tenant }}
+    region: {{ server.region }}
   check_openstack_api:
     plugin: python
     template: keystone/files/collectd_check_openstack_api.conf
