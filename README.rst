@@ -319,6 +319,7 @@ Enable Federated keystone
           protocol: saml2
           remote_id_attribute: Shib-Identity-Provider
           federation_driver: keystone.contrib.federation.backends.sql.Federation
+          federated_domain_name: Federated
           trusted_dashboard:
             - http://${_param:proxy_vip_address_public}/horizon/auth/websso/
           shib_url_scheme: https
