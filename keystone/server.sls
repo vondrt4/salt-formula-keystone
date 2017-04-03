@@ -229,6 +229,16 @@ keystone_fernet_setup:
   - require:
     - service: keystone_service
     - file: keystone_fernet_keys
+
+{%- if server.version == 'newton' %}
+keystone_fernet_setup_credentials:
+  cmd.run:
+  - name: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+  - require:
+    - service: keystone_service
+    - cmd: keystone_fernet_setup
+    - file: keystone_fernet_keys
+{%- endif %}
 {%- endif %}
 
 {% endif %}
