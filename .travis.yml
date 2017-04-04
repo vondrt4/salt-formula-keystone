@@ -13,9 +13,7 @@ install:
     gem 'kitchen-docker'
     gem 'kitchen-inspec'
     gem 'inspec'
-    gem 'kitchen-salt', :git => 'https://github.com/epcim/kitchen-salt.git', :branch => 'dependencis-pkg-repo2'
-    #Waiting for PR#78
-    #gem 'kitchen-salt', '>=0.2.25'
+    gem 'kitchen-salt', :git => 'https://github.com/salt-formulas/kitchen-salt.git'
   - bundle install
 
 env:
@@ -23,6 +21,7 @@ env:
   - PLATFORM=trevorj/salty-whales:xenial MYSQL_VERSION='5.7'
 
 before_script:
+  - set -o pipefail
   - make test | tail
 
 script:
@@ -30,3 +29,14 @@ script:
   - bundle exec kitchen converge under-apache | tail
   - bundle exec kitchen exec     under-apache -c "sudo service mysql start && sudo service apache2 start && keystone-manage db_sync && sleep 1"
   - bundle exec kitchen verify   under-apache -t tests/integration
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/6123573504759330786b
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: never  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
+    on_cancel: never    # options: [always|never|change] default: always
+    on_error: never    # options: [always|never|change] default: always
+  email: false
