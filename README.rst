@@ -498,6 +498,22 @@ Tenant quotas
                   server_groups: 20
                   server_group_members: 20
 
+Extra config params in keystone.conf (since Mitaka release)
+
+.. code-block:: yaml
+
+    keystone:
+      server:
+        ....
+        extra_config:
+          ini_section1:
+            param1: value
+            param2: value
+          ini_section2:
+            param1: value
+            param2: value
+        ....
+
 Usage
 =====
 
