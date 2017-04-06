@@ -360,12 +360,12 @@ log_dir = /var/log/keystone
 #transport_url = rabbit://nova:3qVSI7a1m8AdaDQ7BpB0PJu4@192.168.0.4:5673/
 {%- if server.message_queue.members is defined %}
 transport_url = rabbit://{% for member in server.message_queue.members -%}
-                             {{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ server.message_queue.host }}:{{ member.get('port', 5672) }}
+                             {{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
                              {%- if not loop.last -%},{%- endif -%}
-                             /{{ server.message_queue.virtual_host }}
                          {%- endfor -%}
+                             /{{ server.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ server.message_queue.host }}:{{ member.get('port', 5672) }}/{{ server.message_queue.virtual_host }}
+transport_url = rabbit://{{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ server.message_queue.host }}:{{ server.message_queue.port }}/{{ server.message_queue.virtual_host }}
 {%- endif %}
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
