@@ -417,10 +417,13 @@ driver = sql
 {% if server.auth_methods is defined %}
 methods = {{ server.auth_methods |join(',') }}
 {%- endif %}
-{% if server.federation is defined %}
-{{ server.federation.protocol }} = keystone.auth.plugins.mapped.Mapped
-{%- endif %}
 
+{%- if server.get('federation', {}).oidc is defined %}
+{{ server.federation.oidc.protocol }} = keystone.auth.plugins.mapped.Mapped
+{%- endif %}
+{%- if server.get('federation', {}).saml2 is defined %}
+{{ server.federation.saml2.protocol }} = keystone.auth.plugins.mapped.Mapped
+{%- endif %}
 # Entry point for the password auth plugin module in the
 # `keystone.auth.password` namespace. You do not need to set this unless you
 # are overriding keystone's own password authentication plugin. (string value)
@@ -902,6 +905,15 @@ admin_bind_host={% if server.bind.address is defined %}{{ server.bind.address }}
 #admin_port = 35357
 admin_port = 35357
 
+{%- if server.get('federation', {}).saml2 is defined %}
+[{{ server.federation.saml2.protocol }}]
+remote_id_attribute = {{ server.federation.saml2.remote_id_attribute }}
+{%- endif %}
+
+{%- if server.get('federation', {}).oidc is defined %}
+[{{ server.federation.oidc.protocol }}]
+remote_id_attribute = {{ server.federation.oidc.remote_id_attribute }}
+{%- endif %}
 
 [federation]
 
@@ -927,9 +939,6 @@ driver = {{ server.federation.federation_driver }}
 # `mod_auth_openidc`, this could be `HTTP_OIDC_ISS`. For `mod_auth_mellon`,
 # this could be `MELLON_IDP`. (string value)
 #remote_id_attribute = <None>
-{%- if server.federation is defined %}
-remote_id_attribute = {{ server.federation.remote_id_attribute }}
-{%- endif %}
 
 # An arbitrary domain name that is reserved to allow federated ephemeral users
 # to have a domain concept. Note that an admin will not be able to create a

@@ -357,8 +357,12 @@ driver = sql
 {% if server.auth_methods is defined %}
 methods = {{ server.auth_methods |join(',') }}
 {%- endif %}
-{% if server.federation is defined %}
-{{ server.federation.protocol }} = keystone.auth.plugins.mapped.Mapped
+
+{%- if server.get('federation', {}).oidc is defined %}
+{{ server.federation.oidc.protocol }} = keystone.auth.plugins.mapped.Mapped
+{%- endif %}
+{%- if server.get('federation', {}).saml2 is defined %}
+{{ server.federation.saml2.protocol }} = keystone.auth.plugins.mapped.Mapped
 {%- endif %}
 
 # Entrypoint for the password auth plugin module in the keystone.auth.password
@@ -848,6 +852,15 @@ admin_bind_host={% if server.bind.address is defined %}{{ server.bind.address }}
 # Its value may be silently ignored in the future.
 #cert_required = false
 
+{%- if server.get('federation', {}).saml2 is defined %}
+[{{ server.federation.saml2.protocol }}]
+remote_id_attribute = {{ server.federation.saml2.remote_id_attribute }}
+{%- endif %}
+
+{%- if server.get('federation', {}).oidc is defined %}
+[{{ server.federation.oidc.protocol }}]
+remote_id_attribute = {{ server.federation.oidc.remote_id_attribute }}
+{%- endif %}
 
 [federation]
 
@@ -870,9 +883,6 @@ driver = {{ server.federation.federation_driver }}
 # environment (e.g. if using the mod_shib plugin this value is `Shib-Identity-
 # Provider`). (string value)
 #remote_id_attribute = <None>
-{%- if server.federation is defined %}
-remote_id_attribute = {{ server.federation.remote_id_attribute }}
-{%- endif %}
 
 # A domain name that is reserved to allow federated ephemeral users to have a
 # domain concept. Note that an admin will not be able to create a domain with
