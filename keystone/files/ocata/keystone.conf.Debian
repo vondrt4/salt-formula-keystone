@@ -484,8 +484,8 @@ driver = sql
 {% if server.auth_methods is defined %}
 methods = {{ server.auth_methods |join(',') }}
 {%- endif %}
-{% if server.websso is defined %}
-{{ server.websso.protocol }} = keystone.auth.plugins.mapped.Mapped
+{% if server.federation is defined %}
+{{ server.federation.protocol }} = keystone.auth.plugins.mapped.Mapped
 {%- endif %}
 
 # Entry point for the password auth plugin module in the
@@ -985,8 +985,8 @@ admin_port = 35357
 # namespace. Keystone only provides a `sql` driver, so there is no reason to
 # set this option unless you are providing a custom entry point. (string value)
 #driver = sql
-{%- if server.get('websso', {}).federation_driver is defined %}
-driver = {{ server.websso.federation_driver }}
+{%- if server.get('federation', {}).federation_driver is defined %}
+driver = {{ server.federation.federation_driver }}
 {%- endif %}
 
 # Prefix to use when filtering environment variable names for federated
@@ -999,8 +999,8 @@ driver = {{ server.websso.federation_driver }}
 # `mod_auth_openidc`, this could be `HTTP_OIDC_ISS`. For `mod_auth_mellon`,
 # this could be `MELLON_IDP`. (string value)
 #remote_id_attribute = <None>
-{%- if server.websso is defined %}
-remote_id_attribute = {{ server.websso.remote_id_attribute }}
+{%- if server.federation is defined %}
+remote_id_attribute = {{ server.federation.remote_id_attribute }}
 {%- endif %}
 
 # An arbitrary domain name that is reserved to allow federated ephemeral users
@@ -1008,8 +1008,8 @@ remote_id_attribute = {{ server.websso.remote_id_attribute }}
 # domain with this name or update an existing domain to this name. You are not
 # advised to change this value unless you really have to. (string value)
 #federated_domain_name = Federated
-{%- if server.get('websso', {}).federated_domain_name is defined %}
-federated_domain_name = {{ server.websso.federated_domain_name }}
+{%- if server.get('federation', {}).federated_domain_name is defined %}
+federated_domain_name = {{ server.federation.federated_domain_name }}
 {%- endif %}
 
 # A list of trusted dashboard hosts. Before accepting a Single Sign-On request
@@ -1019,8 +1019,8 @@ federated_domain_name = {{ server.websso.federated_domain_name }}
 # trusted_dashboard=https://acme.example.com/auth/websso
 # trusted_dashboard=https://beta.example.com/auth/websso (multi valued)
 #trusted_dashboard =
-{%- if server.get('websso', {}).trusted_dashboard is defined %}
-{%- for dashboard in server.websso.trusted_dashboard %}
+{%- if server.get('federation', {}).trusted_dashboard is defined %}
+{%- for dashboard in server.federation.trusted_dashboard %}
 trusted_dashboard = {{ dashboard }}
 {%- endfor %}
 {%- endif %}

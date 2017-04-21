@@ -333,7 +333,7 @@ Enable Federated keystone
         - password
         - token
         - saml2
-        websso:
+        federation:
           protocol: saml2
           remote_id_attribute: Shib-Identity-Provider
           federation_driver: keystone.contrib.federation.backends.sql.Federation
