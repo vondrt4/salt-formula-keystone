@@ -6,19 +6,17 @@ keystone_packages:
   - names: {{ server.pkgs }}
 
 {%- if server.service_name in ['apache2', 'httpd'] %}
+{%- if not grains.get('noservices', False) %}
 /etc/apache2/sites-available/wsgi-keystone.conf:
   file.absent:
-    {%- if not grains.get('noservices', False) %}
     - watch_in:
       - service: keystone_service
-    {%- endif %}
 
 /etc/apache2/sites-enabled/wsgi-keystone.conf:
   file.absent:
-    {%- if not grains.get('noservices', False) %}
     - watch_in:
       - service: keystone_service
-    {%- endif %}
+{%- endif %}
 
 include:
 - apache
