@@ -306,9 +306,10 @@ driver = sql
 
 # Allowed authentication methods. (list value)
 #methods = external,password,token,oauth1
-
+{% if server.auth_methods is defined %}
+methods = {{ server.auth_methods |join(',') }}
+{%- endif %}
 {% if server.websso is defined %}
-methods = external,password,token,{{ server.websso.protocol }}
 {{ server.websso.protocol }} = keystone.auth.plugins.mapped.Mapped
 {%- endif %}
 

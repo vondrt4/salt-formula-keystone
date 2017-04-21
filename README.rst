@@ -170,6 +170,20 @@ Keystone fernet tokens for OpenStack Kilo release
           max_active_keys: 3
         ...
 
+Keystone auth methods
+
+.. code-block:: yaml
+
+    keystone:
+      server:
+        ...
+        auth_methods:
+        - external
+        - password
+        - token
+        - oauth1
+        ...
+
 Keystone domain with LDAP backend, using SQL for role/project assignment
 
 .. code-block:: yaml
@@ -315,6 +329,10 @@ Enable Federated keystone
 
     keystone:
       server:
+        auth_methods:
+        - password
+        - token
+        - saml2
         websso:
           protocol: saml2
           remote_id_attribute: Shib-Identity-Provider
