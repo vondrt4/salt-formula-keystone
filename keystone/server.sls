@@ -7,13 +7,9 @@ keystone_packages:
 
 {%- if server.service_name in ['apache2', 'httpd'] %}
 {%- if not grains.get('noservices', False) %}
-/etc/apache2/sites-available/wsgi-keystone.conf:
+purge_not_needed_configs:
   file.absent:
-    - watch_in:
-      - service: keystone_service
-
-/etc/apache2/sites-enabled/wsgi-keystone.conf:
-  file.absent:
+    - names: ['/etc/apache2/sites-enabled/keystone.conf', '/etc/apache2/sites-enabled/wsgi-keystone.conf']
     - watch_in:
       - service: keystone_service
 {%- endif %}
