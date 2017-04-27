@@ -368,6 +368,21 @@ Use a custom identity driver with custom options
           caching: true
           cache_time: 600
 
+Enable CORS parameters
+
+.. code-block:: yaml
+
+    keystone:
+      server:
+        cors:
+          allowed_origin: https:localhost.local,http:localhost.local
+          expose_headers: X-Auth-Token,X-Openstack-Request-Id,X-Subject-Token
+          allow_methods: GET,PUT,POST,DELETE,PATCH
+          allow_headers: X-Auth-Token,X-Openstack-Request-Id,X-Subject-Token
+          allow_credentials: True
+          max_age: 86400
+
+
 
 Keystone client
 ---------------
