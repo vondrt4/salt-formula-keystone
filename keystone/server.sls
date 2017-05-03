@@ -98,8 +98,10 @@ keystone_group:
   {%- endif %}
 
 /etc/keystone/policy.json:
-  file.managed:
-  - source: salt://keystone/files/{{ server.version }}/policy-v{{ server.api_version }}.json
+  keystone_policy.present:
+  - override_data:
+      {{ server.get('policy', {})|yaml }}
+  - formatter: json
   - require:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}

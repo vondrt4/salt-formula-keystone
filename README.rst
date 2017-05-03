@@ -547,6 +547,17 @@ Extra config params in keystone.conf (since Mitaka release)
             param2: value
         ....
 
+Configuration of policy.json file
+
+.. code-block:: yaml
+
+
+    keystone:
+      server:
+        ....
+        policy:
+          admin_or_token_subject: 'rule:admin_required or rule:token_subject'
+
 Usage
 =====
 
