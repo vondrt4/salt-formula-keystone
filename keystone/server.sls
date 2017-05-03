@@ -30,13 +30,6 @@ openstack-keystone:
 
 {%- endif %}
 
-keystone_salt_config:
-  file.managed:
-    - name: /etc/salt/minion.d/keystone.conf
-    - template: jinja
-    - source: salt://keystone/files/salt-minion.conf
-    - mode: 600
-
 {%- if not salt['user.info']('keystone') %}
 
 keystone_user:
@@ -264,7 +257,6 @@ keystone_service_tenant:
   - connection_endpoint: 'http://{{ server.bind.address }}:{{ server.bind.private_port }}/v2.0'
   - require:
     - cmd: keystone_syncdb
-    - file: keystone_salt_config
 
 keystone_admin_tenant:
   keystone.tenant_present:
@@ -322,7 +314,6 @@ keystone_{{ service_name }}_{{ service.get('region', 'RegionOne') }}_endpoint:
   - connection_endpoint: 'http://{{ server.bind.address }}:{{ server.bind.private_port }}/v2.0'
   - require:
     - keystone: keystone_{{ service_name }}_service
-    - file: keystone_salt_config
 
 {% if service.user is defined %}
 
