@@ -6,4 +6,9 @@ orchestrate:
     priority: 510
   control:
     priority: 520
+grain:
+  keystone:
+    keystone_policy:
+      {%- set policy_grains = salt['keystone_policy.rule_list'](path="/etc/keystone/policy.json") %}
+      {{ policy_grains|yaml(False)|indent(6) }}
 

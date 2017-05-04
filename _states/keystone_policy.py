@@ -8,46 +8,74 @@ Merge user defined hash to policy.json
 
 .. code-block:: yaml
 
-/etc/keystone/policy.json:
-  keystone_policy.present:
-    - override_data:
-        override_key: override_value
-    - formatter: json
+  my_rule_present:
+    keystone_policy.rule_present:
+      - name: rule_name
+      - rule: rule
+      - path: /etc/keystone/policy.json
+
+  my_rule_absent:
+    keystone_policy.rule_absent:
+      - name: rule_name
+      - path: /etc/keystone/policy.json
 
 '''
 import logging
-import json
 
 log = logging.getLogger(__name__)
 
-JSON_LOCATION = '/etc/keystone/policy.json'
+
+def __virtual__():
+    return True
 
 
-def _deep_merge(dct, merge_dct):
-    for k, v in merge_dct.iteritems():
-        if (k in dct and isinstance(dct[k], dict)):
-            _deep_merge(dct[k], merge_dct[k])
-        else:
-            dct[k] = merge_dct[k]
-
-
-def present(name, override_data={}, **kwargs):
+def rule_present(name, rule, path, **kwargs):
     '''
-    Ensures that given key present in policy.json file. This is a wrapper
-    around file.serialize state with additional argument: override_data.
-    Rest parameters of file.serialize can be safely used as well.
-    Function reads contents of existing policy.json file into a python
-    dictionary. User defined data populated to this dictionary using deep
-    merge procedure.
-
-    :param name:          Name of the resource
-    :param override_data: User defined data with overrides
+    Ensures that the policy rule exists
+    
+    :param name: Rule name
+    :param rule: Rule
+    :param path: Path to policy file
     '''
-    with open(JSON_LOCATION) as policy_json:
-        json_content = json.load(policy_json)
-
-    _deep_merge(json_content, override_data)
-
-    kwargs['dataset'] = json_content
-    ret = __states__['file.serialize']('/etc/keystone/policy.json', **kwargs)
+    rule = rule or ""
+    ret = {'name': name,
+           'changes': {},
+           'result': True,
+           'comment': 'Rule "{0}" already exists and is in correct state'.format(name)}
+    rule_check = __salt__['keystone_policy.rule_get'](name, path, **kwargs)
+    if not rule_check:
+        __salt__['keystone_policy.rule_set'](name, rule, path, **kwargs)
+        ret['comment'] = 'Rule {0} has been created'.format(name)
+        ret['changes']['Rule'] = 'Rule %s: "%s" has been created' % (name, rule)
+    elif 'Error' in rule_check:
+        ret['comment'] = rule_check.get('Error')
+        ret['result'] = False
+    elif rule_check[name] != rule:
+        __salt__['keystone_policy.rule_set'](name, rule, path, **kwargs)
+        ret['comment'] = 'Rule %s has been changed' % (name,)
+        ret['changes']['Old Rule'] = '%s: "%s"' % (name, rule_check[name])
+        ret['changes']['New Rule'] = '%s: "%s"' % (name, rule)
     return ret
+
+
+def rule_absent(name, path, **kwargs):
+    '''
+    Ensures that the policy rule does not exist
+
+    :param name: Rule name
+    :param path: Path to policy file
+    '''
+    ret = {'name': name,
+           'changes': {},
+           'result': True,
+           'comment': 'Rule "{0}" is already absent'.format(name)}
+    rule_check = __salt__['keystone_policy.rule_get'](name, path, **kwargs)
+    if rule_check:
+        __salt__['keystone_policy.rule_delete'](name, path, **kwargs)
+        ret['comment'] = 'Rule {0} has been deleted'.format(name)
+        ret['changes']['Rule'] = 'Rule %s: "%s" has been deleted' % (name, rule_check[name])
+    elif 'Error' in rule_check:
+        ret['comment'] = rule_check.get('Error')
+        ret['result'] = False
+    return ret
+
