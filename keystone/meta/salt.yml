@@ -21,6 +21,37 @@ minion:
     keystone.tenant: '{{ client.server.tenant }}'
     keystone.auth_url: 'http://{{ client.server.host }}:{{ client.server.public_port }}/v2.0/'
     {%- endif %}
+
+  # Profile based metadata
+  {%- from "keystone/map.jinja" import client with context %}
+  {%- for profile_name, identity in client.server.iteritems() %}
+
+  {%- if identity.admin.get('protocol', 'http') == 'http' %}
+  {%- set protocol = 'http' %}
+  {%- else %}
+  {%- set protocol = 'https' %}
+  {%- endif %}
+
+  {%- if identity.admin.get('api_version', '2') == '3' %}
+  {%- set version = "v3" %}
+  {%- else %}
+  {%- set version = "v2.0" %}
+  {%- endif %}
+
+  {%- if identity.admin.user is defined %}
+  {%- if identity.admin.token is not defined %}
+
+    {{ profile_name }}:
+      keystone.user: '{{ identity.admin.user }}'
+      keystone.password: '{{ identity.admin.password }}'
+      keystone.tenant: '{{ identity.admin.project }}'
+      keystone.auth_url: '{{ protocol+'://'+identity.admin.host+':'+identity.admin.port|string+'/'+version }}'
+      keystone.region_name: '{{ identity.admin.region_name }}'
+
+  {%- endif %}
+  {%- endif %}
+  {%- endfor %}
+
   {%- endif %}
 
 {#-
