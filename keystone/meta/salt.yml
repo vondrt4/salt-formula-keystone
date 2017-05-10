@@ -8,14 +8,14 @@ orchestrate:
     priority: 520
 
 minion:
-  {% if pillar.keystone.server is defined or pillar.keystone.client is defined %}
+  {%- if pillar.keystone.server is defined or pillar.keystone.client is defined %}
   keystone:
-    {%- if pillar.keystone.get('server', {'enabled': False}).enabled -%}
-    {%- from "keystone/map.jinja" import server with context -%}
+    {%- if pillar.keystone.get('server', {'enabled': False}).enabled %}
+    {%- from "keystone/map.jinja" import server with context %}
     keystone.token: '{{ server.service_token }}'
     keystone.endpoint: 'http://{{ server.bind.address }}:{{ server.bind.private_port }}/v2.0'
-    {%- else -%}
-    {%- from "keystone/map.jinja" import client with context -%}
+    {%- else %}
+    {%- from "keystone/map.jinja" import client with context %}
     keystone.user: '{{ client.server.user }}'
     keystone.password: '{{ client.server.password }}'
     keystone.tenant: '{{ client.server.tenant }}'
