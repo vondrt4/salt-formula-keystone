@@ -8,7 +8,7 @@ orchestrate:
     priority: 520
 
 minion:
-  {%- if pillar.keystone.server is defined or pillar.keystone.client is defined %}
+  {%- if pillar.get('keystone', {}).get('server') or pillar.get('keystone', {}).get('client') %}
     {%- from "keystone/map.jinja" import server with context %}
     {%- from "keystone/map.jinja" import client with context %}
 
