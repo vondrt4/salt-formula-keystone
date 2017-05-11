@@ -90,17 +90,38 @@ keystone_group:
     - service: keystone_service
   {%- endif %}
 
-/etc/keystone/policy.json:
-  keystone_policy.present:
-  - override_data:
-      {{ server.get('policy', {})|yaml }}
-  - formatter: json
+{%- for name, rule in server.get('policy', {}).iteritems() %}
+
+{%- if rule != None %}
+
+rule_{{ name }}_present:
+  keystone_policy.rule_present:
+  - path: /etc/keystone/policy.json
+  - name: {{ name }}
+  - rule: {{ rule }}
   - require:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: keystone_service
   {%- endif %}
+
+{%- else %}
+
+rule_{{ name }}_absent:
+  keystone_policy.rule_absent:
+  - path: /etc/keystone/policy.json
+  - name: {{ name }}
+  - require:
+    - pkg: keystone_packages
+  {%- if not grains.get('noservices', False) %}
+  - watch_in:
+    - service: keystone_service
+  {%- endif %}
+
+{%- endif %}
+
+{%- endfor %}
 
 {%- if server.get("domain", {}) %}
 

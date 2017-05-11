@@ -86,6 +86,17 @@ Keystone public HTTPS API
             admin_address: 10.0.0.20
             admin_port: 8774
 
+Keystone with custom policies. Keys with specified rules are created or set to this value if they already exists. Keys with no value (like our "existing_rule") are deleted from the policy file.
+
+.. code-block:: yaml
+
+    keystone:
+      server:
+        enabled: true
+        policy:
+          new_rule: "rule:admin_required"
+          existing_rule:
+
 Keystone memcached storage for tokens
 
 .. code-block:: yaml
