@@ -9,36 +9,38 @@ orchestrate:
 
 minion:
   {%- if pillar.keystone.server is defined or pillar.keystone.client is defined %}
+    {%- from "keystone/map.jinja" import server with context %}
+    {%- from "keystone/map.jinja" import client with context %}
+
   keystone:
     {%- if pillar.keystone.get('server', {'enabled': False}).enabled %}
-      {%- from "keystone/map.jinja" import server with context %}
     keystone.token: '{{ server.service_token }}'
     keystone.endpoint: 'http://{{ server.bind.address }}:{{ server.bind.private_port }}/v2.0'
     {%- else %}
-      {%- from "keystone/map.jinja" import client with context %}
       {%- if client.server.user is defined %}
     keystone.user: '{{ client.server.user }}'
     keystone.password: '{{ client.server.password }}'
     keystone.tenant: '{{ client.server.tenant }}'
     keystone.auth_url: 'http://{{ client.server.host }}:{{ client.server.public_port }}/v2.0/'
+      {%- endif %}
+    {%- endif %}
+
+    {#- Profile based metadata #}
+    {%- for profile_name, identity in client.server.iteritems() %}
+      {%- if identity.admin.get('protocol', 'http') == 'http' %}
+        {%- set protocol = 'http' %}
       {%- else %}
+        {%- set protocol = 'https' %}
+      {%- endif %}
 
-        {#- Profile based metadata #}
-        {%- for profile_name, identity in client.server.iteritems() %}
-          {%- if identity.admin.get('protocol', 'http') == 'http' %}
-            {%- set protocol = 'http' %}
-          {%- else %}
-            {%- set protocol = 'https' %}
-          {%- endif %}
+      {%- if identity.admin.get('api_version', '2') == '3' %}
+        {%- set version = "v3" %}
+      {%- else %}
+        {%- set version = "v2.0" %}
+      {%- endif %}
 
-          {%- if identity.admin.get('api_version', '2') == '3' %}
-            {%- set version = "v3" %}
-          {%- else %}
-            {%- set version = "v2.0" %}
-          {%- endif %}
-
-          {%- if identity.admin.user is defined %}
-            {%- if identity.admin.token is not defined %}
+      {%- if identity.admin.user is defined %}
+        {%- if identity.admin.token is not defined %}
 
     {{ profile_name }}:
       keystone.user: '{{ identity.admin.user }}'
@@ -47,11 +49,9 @@ minion:
       keystone.auth_url: '{{ protocol+'://'+identity.admin.host+':'+identity.admin.port|string+'/'+version }}'
       keystone.region_name: '{{ identity.admin.region_name }}'
 
-            {%- endif %}
-          {%- endif %}
-        {%- endfor %}
+        {%- endif %}
       {%- endif %}
-    {%- endif %}
+    {%- endfor %}
   {%- endif %}
 
 {#-
