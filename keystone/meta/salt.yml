@@ -22,7 +22,7 @@ minion:
     keystone.token: '{{ server.service_token }}'
     keystone.endpoint: 'http://{{ server.bind.address }}:{{ server.bind.private_port }}/v2.0'
     {%- else %}
-      {%- if client.server.user is defined %}
+      {%- if client.get('server', {}).get('user') %}
     keystone.user: '{{ client.server.user }}'
     keystone.password: '{{ client.server.password }}'
     keystone.tenant: '{{ client.server.tenant }}'
@@ -31,7 +31,7 @@ minion:
     {%- endif %}
 
     {#- Profile based metadata #}
-    {%- for profile_name, identity in client.server.iteritems() %}
+    {%- for profile_name, identity in client.get('server', {}).iteritems() %}
       {%- if identity.admin.get('protocol', 'http') == 'http' %}
         {%- set protocol = 'http' %}
       {%- else %}
