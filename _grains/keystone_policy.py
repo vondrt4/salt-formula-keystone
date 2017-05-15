@@ -7,8 +7,9 @@ def main():
     path = "/etc/keystone/policy.json"
     __opts__ = salt.config.minion_config('/etc/salt/minion')
     keystone_policy_mod = salt.loader.raw_mod(__opts__, 'keystone_policy', None)
-    result = keystone_policy_mod['keystone_policy.rule_list'](path)
-    if result and 'Error' not in result:
-        return {'keystone_policy': result}
+    if keystone_policy_mod:
+        result = keystone_policy_mod['keystone_policy.rule_list'](path)
+        if result and 'Error' not in result:
+            return {'keystone_policy': result}
     return {}
 
