@@ -334,7 +334,7 @@ Run keystone under Apache
         modules:
           - wsgi
 
-Enable Federated keystone
+Enable SAML2 Federated keystone
 
 .. code-block:: yaml
 
@@ -344,14 +344,16 @@ Enable Federated keystone
         - password
         - token
         - saml2
-        websso:
-          protocol: saml2
-          remote_id_attribute: Shib-Identity-Provider
+        federation:
+          saml2:
+            protocol: saml2
+            remote_id_attribute: Shib-Identity-Provider
+            shib_url_scheme: https
+            shib_compat_valid_user: 'on'
           federation_driver: keystone.contrib.federation.backends.sql.Federation
           federated_domain_name: Federated
           trusted_dashboard:
-            - http://${_param:proxy_vip_address_public}/horizon/auth/websso/
-          shib_url_scheme: https
+            - https://${_param:cluster_public_host}/horizon/auth/websso/
     apache:
       server:
         pkgs:
@@ -360,6 +362,48 @@ Enable Federated keystone
         modules:
           - wsgi
           - shib2
+
+Enable OIDC Federated keystone
+
+.. code-block:: yaml
+
+    keystone:
+      server:
+        auth_methods:
+        - password
+        - token
+        - oidc
+        federation:
+        oidc:
+            protocol: oidc
+            remote_id_attribute: HTTP_OIDC_ISS
+            remote_id_attribute_value: https://accounts.google.com
+            oidc_claim_prefix: "OIDC-"
+            oidc_response_type: id_token
+            oidc_scope: "openid email profile"
+            oidc_provider_metadata_url: https://accounts.google.com/.well-known/openid-configuration
+            oidc_client_id: <openid_client_id>
+            oidc_client_secret: <openid_client_secret>
+            oidc_crypto_passphrase: openstack
+            oidc_redirect_uri: https://key.example.com:5000/v3/auth/OS-FEDERATION/websso/oidc/redirect
+            oidc_oauth_introspection_endpoint: https://www.googleapis.com/oauth2/v1/tokeninfo
+            oidc_oauth_introspection_token_param_name: access_token
+            oidc_oauth_remote_user_claim: user_id
+            oidc_ssl_validate_server: 'off'
+        federated_domain_name: Federated
+        federation_driver: keystone.contrib.federation.backends.sql.Federation
+        trusted_dashboard:
+          - https://${_param:cluster_public_host}/auth/websso/
+    apache:
+      server:
+        pkgs:
+          - apache2
+          - libapache2-mod-auth-openidc
+        modules:
+          - wsgi
+          - auth_openidc
+
+Notes: Ubuntu Trusty repository doesn't contain libapache2-mod-auth-openidc package. Additonal repository should be added to source list.
 
 Use a custom identity driver with custom options
 

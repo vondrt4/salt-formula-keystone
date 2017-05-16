@@ -65,7 +65,7 @@ keystone_group:
     - service: keystone_service
   {%- endif %}
 
-{% if server.websso is defined %}
+{% if server.federation is defined %}
 
 /etc/keystone/sso_callback_template.html:
   file.managed:
