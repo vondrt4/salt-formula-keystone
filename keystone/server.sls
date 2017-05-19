@@ -6,12 +6,14 @@ keystone_packages:
   - names: {{ server.pkgs }}
 
 {%- if server.service_name in ['apache2', 'httpd'] %}
+{%- set keystone_service = 'apache_service' %}
+
 {%- if not grains.get('noservices', False) %}
 purge_not_needed_configs:
   file.absent:
     - names: ['/etc/apache2/sites-enabled/keystone.conf', '/etc/apache2/sites-enabled/wsgi-keystone.conf']
     - watch_in:
-      - service: keystone_service
+      - service: {{ keystone_service }}
 {%- endif %}
 
 include:
@@ -27,6 +29,10 @@ openstack-keystone:
     - enable: False
     - watch:
       - pkg: keystone_packages
+
+{%- else %}
+
+{%- set keystone_service = 'keystone_service' %}
 
 {%- endif %}
 
@@ -62,7 +68,7 @@ keystone_group:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}
   - watch_in:
-    - service: keystone_service
+    - service: {{ keystone_service }}
   {%- endif %}
 
 {% if server.federation is defined %}
@@ -74,7 +80,7 @@ keystone_group:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}
   - watch_in:
-    - service: keystone_service
+    - service: {{ keystone_service }}
   {%- endif %}
 
 {%- endif %}
@@ -87,7 +93,7 @@ keystone_group:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}
   - watch_in:
-    - service: keystone_service
+    - service: {{ keystone_service }}
   {%- endif %}
 
 {%- for name, rule in server.get('policy', {}).iteritems() %}
@@ -103,7 +109,7 @@ rule_{{ name }}_present:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}
   - watch_in:
-    - service: keystone_service
+    - service: {{ keystone_service }}
   {%- endif %}
 
 {%- else %}
@@ -116,7 +122,7 @@ rule_{{ name }}_absent:
     - pkg: keystone_packages
   {%- if not grains.get('noservices', False) %}
   - watch_in:
-    - service: keystone_service
+    - service: {{ keystone_service }}
   {%- endif %}
 
 {%- endif %}
@@ -141,7 +147,7 @@ rule_{{ name }}_absent:
       - file: /etc/keystone/domains
     {%- if not grains.get('noservices', False) %}
     - watch_in:
-      - service: keystone_service
+      - service: {{ keystone_service }}
     {%- endif %}
     - defaults:
         domain_name: {{ domain_name }}
@@ -156,7 +162,7 @@ keystone_domain_{{ domain_name }}_cacert:
       - file: /etc/keystone/domains
     {%- if not grains.get('noservices', False) %}
     - watch_in:
-      - service: keystone_service
+      - service: {{ keystone_service }}
     {%- endif %}
 
 {%- endif %}
@@ -169,7 +175,7 @@ keystone_domain_{{ domain_name }}:
     - require:
       - file: /root/keystonercv3
     {%- if not grains.get('noservices', False) %}
-      - service: keystone_service
+      - service: {{ keystone_service }}
     {%- endif %}
 {%- endif %}
 
@@ -187,12 +193,12 @@ keystone_ldap_default_cacert:
       - pkg: keystone_packages
     {%- if not grains.get('noservices', False) %}
     - watch_in:
-      - service: keystone_service
+      - service: {{ keystone_service }}
     {%- endif %}
 
 {%- endif %}
 
-{%- if not grains.get('noservices', False) %}
+{%- if not grains.get('noservices', False) and server.service_name not in ['apache2', 'httpd'] %}
 keystone_service:
   service.running:
   - name: {{ server.service_name }}
@@ -230,7 +236,7 @@ keystone_syncdb:
   - name: keystone-manage db_sync; sleep 1
   - timeout: 120
   - require:
-    - service: keystone_service
+    - service: {{ keystone_service }}
 {%- endif %}
 
 {% if server.tokens.engine == 'fernet' %}
@@ -251,7 +257,7 @@ keystone_fernet_setup:
   cmd.run:
   - name: keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
   - require:
-    - service: keystone_service
+    - service: {{ keystone_service }}
     - file: keystone_fernet_keys
 
 {%- if server.version == 'newton' %}
@@ -259,7 +265,7 @@ keystone_fernet_setup_credentials:
   cmd.run:
   - name: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
   - require:
-    - service: keystone_service
+    - service: {{ keystone_service }}
     - cmd: keystone_fernet_setup
     - file: keystone_fernet_keys
 {%- endif %}
