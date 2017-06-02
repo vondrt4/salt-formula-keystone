@@ -66,10 +66,8 @@ keystone_group:
   - template: jinja
   - require:
     - pkg: keystone_packages
-  {%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: {{ keystone_service }}
-  {%- endif %}
 
 {% if server.federation is defined %}
 
@@ -78,10 +76,8 @@ keystone_group:
   - source: salt://keystone/files/sso_callback_template.html
   - require:
     - pkg: keystone_packages
-  {%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: {{ keystone_service }}
-  {%- endif %}
 
 {%- endif %}
 
@@ -91,10 +87,8 @@ keystone_group:
   - template: jinja
   - require:
     - pkg: keystone_packages
-  {%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: {{ keystone_service }}
-  {%- endif %}
 
 {%- for name, rule in server.get('policy', {}).iteritems() %}
 
@@ -107,10 +101,8 @@ rule_{{ name }}_present:
   - rule: {{ rule }}
   - require:
     - pkg: keystone_packages
-  {%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: {{ keystone_service }}
-  {%- endif %}
 
 {%- else %}
 
@@ -120,10 +112,8 @@ rule_{{ name }}_absent:
   - name: {{ name }}
   - require:
     - pkg: keystone_packages
-  {%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: {{ keystone_service }}
-  {%- endif %}
 
 {%- endif %}
 
@@ -174,9 +164,7 @@ keystone_domain_{{ domain_name }}:
     - unless: source /root/keystonercv3 && openstack domain list | grep " {{ domain_name }}"
     - require:
       - file: /root/keystonercv3
-    {%- if not grains.get('noservices', False) %}
       - service: {{ keystone_service }}
-    {%- endif %}
 {%- endif %}
 
 {%- endfor %}
@@ -191,18 +179,19 @@ keystone_ldap_default_cacert:
     - contents_pillar: keystone:server:ldap:tls:cacert
     - require:
       - pkg: keystone_packages
-    {%- if not grains.get('noservices', False) %}
     - watch_in:
       - service: {{ keystone_service }}
-    {%- endif %}
 
 {%- endif %}
 
-{%- if not grains.get('noservices', False) and server.service_name not in ['apache2', 'httpd'] %}
+{%- if server.service_name not in ['apache2', 'httpd'] %}
 keystone_service:
   service.running:
   - name: {{ server.service_name }}
   - enable: True
+  {% if grains.noservices is defined %}
+  - onlyif: {% if grains.get('noservices', "True") %}"True"{% else %}False{% endif %}
+  {% endif %}
   - watch:
     - file: /etc/keystone/keystone.conf
 {%- endif %}
