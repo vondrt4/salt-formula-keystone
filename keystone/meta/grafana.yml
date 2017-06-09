@@ -1,5 +1,10 @@
 dashboard:
-  keystone:
+  keystone_prometheus:
+    datasource: prometheus
+    format: json
+    template: keystone/files/grafana_dashboards/keystone_prometheus.json
+  keystone_influxdb:
+    datasource: influxdb
     format: json
     template: keystone/files/grafana_dashboards/keystone_influxdb.json
   main:
