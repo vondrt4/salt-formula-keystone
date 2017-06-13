@@ -8,13 +8,11 @@ keystone_packages:
 {%- if server.service_name in ['apache2', 'httpd'] %}
 {%- set keystone_service = 'apache_service' %}
 
-{%- if not grains.get('noservices', False) %}
 purge_not_needed_configs:
   file.absent:
     - names: ['/etc/apache2/sites-enabled/keystone.conf', '/etc/apache2/sites-enabled/wsgi-keystone.conf']
     - watch_in:
       - service: {{ keystone_service }}
-{%- endif %}
 
 include:
 - apache
@@ -135,10 +133,8 @@ rule_{{ name }}_absent:
     - template: jinja
     - require:
       - file: /etc/keystone/domains
-    {%- if not grains.get('noservices', False) %}
     - watch_in:
       - service: {{ keystone_service }}
-    {%- endif %}
     - defaults:
         domain_name: {{ domain_name }}
 
@@ -157,7 +153,6 @@ keystone_domain_{{ domain_name }}_cacert:
 
 {%- endif %}
 
-{%- if not grains.get('noservices', False) %}
 keystone_domain_{{ domain_name }}:
   cmd.run:
     - name: source /root/keystonercv3 && openstack domain create --description "{{ domain.description }}" {{ domain_name }}
@@ -165,7 +160,6 @@ keystone_domain_{{ domain_name }}:
     - require:
       - file: /root/keystonercv3
       - service: {{ keystone_service }}
-{%- endif %}
 
 {%- endfor %}
 
@@ -189,9 +183,9 @@ keystone_service:
   service.running:
   - name: {{ server.service_name }}
   - enable: True
-  {% if grains.noservices is defined %}
-  - onlyif: {% if grains.get('noservices', "True") %}"True"{% else %}False{% endif %}
-  {% endif %}
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - watch:
     - file: /etc/keystone/keystone.conf
 {%- endif %}
