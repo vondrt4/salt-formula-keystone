@@ -242,19 +242,29 @@ keystone_fernet_setup:
   - require:
     - service: {{ keystone_service }}
     - file: keystone_fernet_keys
+{%- endif %}
 
-{%- if server.version == 'newton' %}
-keystone_fernet_setup_credentials:
+{% endif %}
+
+{%- if server.version in ['newton', 'ocata'] %}
+keystone_credential_keys:
+  file.directory:
+  - name: {{ server.credential.location }}
+  - mode: 750
+  - user: keystone
+  - group: keystone
+  - require:
+    - pkg: keystone_packages
+
+{%- if not grains.get('noservices', False) %}
+keystone_credential_setup:
   cmd.run:
   - name: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
   - require:
     - service: {{ keystone_service }}
-    - cmd: keystone_fernet_setup
-    - file: keystone_fernet_keys
+    - file: keystone_credential_keys
 {%- endif %}
 {%- endif %}
-
-{% endif %}
 
 {%- if not grains.get('noservices', False) %}
 

@@ -30,6 +30,8 @@ parameters:
         engine: cache
         expiration: 43200
         location: /etc/keystone/fernet-keys/
+      credential:
+        location: /etc/keystone/credential-keys/
       message_queue:
         engine: rabbitmq
         host: ${_param:cluster_vip_address}

@@ -745,7 +745,7 @@ allow_headers = {{ server.cors.allow_headers }}
 # of keys should be managed separately and require different rotation policies.
 # Do not share this repository with the repository used to manage keys for
 # Fernet tokens. (string value)
-#key_repository = /etc/keystone/credential-keys/
+key_repository = {{ server.credential.location }}
 
 
 [database]
