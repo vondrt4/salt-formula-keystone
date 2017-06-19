@@ -70,7 +70,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "min(openstack_api_check_status{service=~\"keystone.*public.*\",region=~\"$region\"}) by (region)",
+              "expr": "min(openstack_api_check_status{service=~\"keystone.*public.*\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{ service }}",
@@ -157,7 +157,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "avg(irate(haproxy_http_response_5xx{proxy=~\"keystone.*\",sv=\"FRONTEND\"}[5m]))",
+              "expr": "sum(irate(haproxy_http_response_5xx{proxy=~\"keystone.*\",sv=\"FRONTEND\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "per sec",
@@ -846,28 +846,7 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": [
-      {
-        "allValue": null,
-        "current": {},
-        "hide": 2,
-        "includeAll": false,
-        "label": null,
-        "multi": false,
-        "name": "region",
-        "options": [],
-        "query": "label_values(openstack_api_check_status, region)",
-        "refresh": 1,
-        "refresh_on_load": true,
-        "regex": "",
-        "sort": 0,
-        "tagValuesQuery": "",
-        "tags": [],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-1h",
