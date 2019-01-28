@@ -67,6 +67,15 @@ keystone_group:
   - watch_in:
     - service: {{ keystone_service }}
 
+/etc/keystone/policy.json:
+  file.managed:
+  - source: salt://keystone/files/policy.v2cloudsample.json
+#  - template: jinja
+  - require:
+    - pkg: keystone_packages
+  - watch_in:
+    - service: {{ keystone_service }}
+
 {% if server.federation is defined %}
 
 /etc/keystone/sso_callback_template.html:

@@ -396,7 +396,7 @@ methods = {{ server.auth_methods |join(',') }}
 # Default TTL, in seconds, for any cached item in the dogpile.cache region.
 # This applies to any cached method that doesn't have an explicit cache
 # expiration time defined for it. (integer value)
-#expiration_time = 600
+expiration_time = 43200
 
 # Dogpile.cache backend module. It is recommended that Memcache with pooling
 # (oslo_cache.memcache_pool) or Redis (dogpile.cache.redis) be used in
@@ -480,11 +480,11 @@ driver = sql
 
 # Toggle for catalog caching. This has no effect unless global caching is
 # enabled. (boolean value)
-#caching = true
+caching = true
 
 # Time to cache catalog data (in seconds). This has no effect unless global and
 # catalog caching are enabled. (integer value)
-#cache_time = <None>
+cache_time = 43200
 
 # Maximum number of entities that will be returned in a catalog collection.
 # (integer value)
@@ -694,11 +694,11 @@ max_retries=-1
 
 # Toggle for domain config caching. This has no effect unless global caching is
 # enabled. (boolean value)
-#caching = true
+caching = true
 
 # TTL (in seconds) to cache domain config data. This has no effect unless
 # domain config caching is enabled. (integer value)
-#cache_time = 300
+cache_time = 43200
 
 
 [endpoint_filter]
@@ -981,11 +981,11 @@ driver = {{ server.get('backend', 'sql') }}
 
 # Toggle for identity caching. This has no effect unless global caching is
 # enabled. (boolean value)
-#caching = true
+caching = true
 
 # Time to cache identity data (in seconds). This has no effect unless global
 # and identity caching are enabled. (integer value)
-#cache_time = 600
+cache_time = 43200
 
 # Maximum supported length for user passwords; decrease to improve performance.
 # (integer value)
@@ -1848,12 +1848,12 @@ heartbeat_rate = 2
 # Toggle for resource caching. This has no effect unless global caching is
 # enabled. (boolean value)
 # Deprecated group/name - [assignment]/caching
-#caching = true
+caching = true
 
 # TTL (in seconds) to cache resource data. This has no effect unless global
 # caching is enabled. (integer value)
 # Deprecated group/name - [assignment]/cache_time
-#cache_time = <None>
+cache_time = 43200
 
 # Maximum number of entities that will be returned in a resource collection.
 # (integer value)
@@ -1863,11 +1863,13 @@ heartbeat_rate = 2
 # Name of the domain that owns the `admin_project_name`. Defaults to None.
 # (string value)
 #admin_project_domain_name = <None>
+admin_project_domain_name = Default
 
 # Special project for performing administrative operations on remote services.
 # Tokens scoped to this project will contain the key/value
 # `is_admin_project=true`. Defaults to None. (string value)
 #admin_project_name = <None>
+admin_project_name = admin
 
 # Whether the names of projects are restricted from containing url reserved
 # characters. If set to new, attempts to create or update a project with a url
@@ -1903,13 +1905,13 @@ heartbeat_rate = 2
 
 # Toggle for revocation event caching. This has no effect unless global caching
 # is enabled. (boolean value)
-#caching = true
+caching = true
 
 # Time to cache the revocation list and the revocation events (in seconds).
 # This has no effect unless global and token caching are enabled. (integer
 # value)
 # Deprecated group/name - [token]/revocation_cache_time
-#cache_time = 3600
+cache_time = 43200
 
 
 [role]
@@ -1924,11 +1926,11 @@ heartbeat_rate = 2
 
 # Toggle for role caching. This has no effect unless global caching is enabled.
 # (boolean value)
-#caching = true
+caching = true
 
 # TTL (in seconds) to cache role data. This has no effect unless global caching
 # is enabled. (integer value)
-#cache_time = <None>
+cache_time = 43200
 
 # Maximum number of entities that will be returned in a role collection.
 # (integer value)
@@ -2141,11 +2143,11 @@ driver = memcache_pool
 
 # Toggle for token system caching. This has no effect unless global caching is
 # enabled. (boolean value)
-#caching = true
+caching = true
 
 # Time to cache tokens (in seconds). This has no effect unless global and token
 # caching are enabled. (integer value)
-#cache_time = <None>
+cache_time = 43200
 
 # Revoke token by token identifier. Setting revoke_by_id to true enables
 # various forms of enumerating tokens, e.g. `list tokens for user`. These
