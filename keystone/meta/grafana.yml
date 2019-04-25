@@ -1,0 +1,55 @@
+dashboard:
+  keystone_prometheus:
+    datasource: prometheus
+    format: json
+    template: keystone/files/grafana_dashboards/keystone_prometheus.json
+  keystone_influxdb:
+    datasource: influxdb
+    format: json
+    template: keystone/files/grafana_dashboards/keystone_influxdb.json
+  main:
+    row:
+      ost-control-plane:
+        title: OpenStack Control Plane
+        panel:
+          keystone:
+            title: Keystone
+            links:
+            - dashboard: Keystone
+              title: Keystone
+              type: dashboard
+            target:
+              cluster_status:
+                rawQuery: true
+                query: SELECT last(value) FROM cluster_status WHERE cluster_name = 'keystone' AND environment_label = '$environment' AND $timeFilter GROUP BY time($interval) fill(null)
+  service_level:
+    row:
+      keystone-service-level:
+        title: Keystone Service Levels
+        panel:
+          keystone-control-uptime:
+            title: Keystone Control Uptime
+            target:
+              keystone-control-healthy-status:
+                alias: "Healthy"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'keystone' AND value = 0 AND $timeFilter
+              keystone-control-degraded-unknwon-status:
+                alias: "Degraded or Unknwon"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'keystone' AND (value = 1 OR value = 2 OR value = 3) AND $timeFilter
+              keystone-control-down-status:
+                alias: "Down"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'keystone' AND value = 4 AND $timeFilter
+          keystone-api-availability:
+            title: Keystone API Availability
+            target:
+              keystone-api-up-status:
+                alias: "Up"
+                rawQuery: true
+                query: SELECT count(value) FROM openstack_check_api WHERE environment_label = '$environment' AND service = 'keystone-public-api' AND value = 1 AND $timeFilter
+              keystone-api-down-status:
+                alias: "Down"
+                rawQuery: true
+                query: SELECT count(value) FROM openstack_check_api WHERE environment_label = '$environment' AND service = 'keystone-public-api' AND value = 0 AND $timeFilter

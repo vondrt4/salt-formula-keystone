@@ -1,0 +1,8 @@
+name: "keystone"
+version: "2016.4.1"
+source: "https://github.com/salt-formulas/salt-formula-keystone"
+dependencies:
+  - name: apache
+    source: "https://github.com/salt-formulas/salt-formula-apache"
+  - name: mysql
+    source: "https://github.com/salt-formulas/salt-formula-mysql"

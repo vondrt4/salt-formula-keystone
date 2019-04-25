@@ -1,30 +1,34 @@
 
 {% set server = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['keystone', 'python-keystone', 'python-keystoneclient', 'python-psycopg2', 'python-mysqldb', 'mysql-client', 'python-six', 'python-memcache', 'python-openstackclient'],
+        'pkgs': ['keystone', 'python-keystone', 'python-keystoneclient', 'python-psycopg2', 'python-mysqldb', 'mysql-client', 'python-six', 'python-memcache', 'python-openstackclient', 'gettext-base', 'python-pycadf'],
         'service_name': 'keystone',
         'version': 'icehouse',
         'api_version': '2',
+        'cors': {},
         'tokens': {
           'engine': 'database',
           'expiration': '86400'
         },
         'notification': False,
-        'roles': ['admin', 'Member']
+        'roles': ['admin', 'Member'],
+        'cacert': '/etc/ssl/certs/ca-certificates.crt'
     },
     'RedHat': {
-        'pkgs': ['openstack-keystone', 'openstack-utils', 'python-keystone', 'python-keystoneclient'],
+        'pkgs': ['openstack-keystone', 'openstack-utils', 'python-keystone', 'python-keystoneclient', 'python-pycadf'],
         'service_name': 'openstack-keystone',
         'api_version': '2',
         'version': 'icehouse',
+        'cors': {},
         'tokens': {
           'engine': 'database',
           'expiration': '86400'
         },
         'notification': False,
-        'roles': ['admin', 'Member']
+        'roles': ['admin', 'Member'],
+        'cacert': '/etc/pki/tls/certs/ca-bundle.crt'
     },
-}, merge=salt['pillar.get']('keystone:server')) %}
+}, merge=pillar.keystone.get('server', {})) %}
 
 {% set client = salt['grains.filter_by']({
     'Debian': {
@@ -36,7 +40,7 @@
         'pkgs': ['python-keystoneclient'],
         'roles': ['admin', 'Member'],
     },
-}, merge=salt['pillar.get']('keystone:client')) %}
+}, merge=pillar.keystone.get('client', {})) %}
 
 {% set control = salt['grains.filter_by']({
     'Debian': {
@@ -45,4 +49,4 @@
     'RedHat': {
         'pkgs': [],
     },
-}, merge=salt['pillar.get']('keystone:control')) %}
+}, merge=pillar.keystone.get('control', {})) %}

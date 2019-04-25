@@ -1,0 +1,59 @@
+orchestrate:
+  server:
+    priority: 500
+    batch: 1
+  client:
+    priority: 510
+  control:
+    priority: 520
+
+minion:
+  {%- if pillar.get('keystone', {}).get('server') or pillar.get('keystone', {}).get('client') %}
+    {%- from "keystone/map.jinja" import server with context %}
+    {%- from "keystone/map.jinja" import client with context %}
+
+  keystone:
+    {%- if pillar.keystone.get('server', {'enabled': False}).enabled %}
+    keystone.token: '{{ server.service_token }}'
+    keystone.endpoint: 'http://{{ server.bind.address }}:{{ server.bind.private_port }}/v2.0'
+    {%- else %}
+      {%- if client.get('server', {}).get('user') %}
+    keystone.user: '{{ client.server.user }}'
+    keystone.password: '{{ client.server.password }}'
+    keystone.tenant: '{{ client.server.tenant }}'
+    keystone.auth_url: 'http://{{ client.server.host }}:{{ client.server.public_port }}/v2.0/'
+      {%- endif %}
+    {%- endif %}
+
+    {#- Profile based metadata #}
+    {%- for profile_name, identity in client.get('server', {}).iteritems() %}
+      {%- if identity.admin.get('protocol', 'http') == 'http' %}
+        {%- set protocol = 'http' %}
+      {%- else %}
+        {%- set protocol = 'https' %}
+      {%- endif %}
+
+      {%- if identity.admin.get('api_version', '2') == '3' %}
+        {%- set version = "v3" %}
+      {%- else %}
+        {%- set version = "v2.0" %}
+      {%- endif %}
+
+      {%- if identity.admin.user is defined %}
+        {%- if identity.admin.token is not defined %}
+
+    {{ profile_name }}:
+      keystone.user: '{{ identity.admin.user }}'
+      keystone.password: '{{ identity.admin.password }}'
+      keystone.tenant: '{{ identity.admin.project }}'
+      keystone.auth_url: '{{ protocol+'://'+identity.admin.host+':'+identity.admin.port|string+'/'+version }}'
+      keystone.region_name: '{{ identity.admin.region_name }}'
+
+        {%- endif %}
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
+
+{#-
+vim: syntax=jinja
+-#}

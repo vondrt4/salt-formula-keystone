@@ -1,8 +1,8 @@
 applications:
 - keystone
+classes:
+- service.keystone.support
 parameters:
-  _param:
-    mysql_keystone_password: password
   keystone:
     server:
       enabled: true
@@ -28,10 +28,20 @@ parameters:
         user: 'keystone'
       tokens:
         engine: cache
-        expiration: 86400
+        expiration: 43200
         location: /etc/keystone/fernet-keys/
+      credential:
+        location: /etc/keystone/credential-keys/
+      message_queue:
+        engine: rabbitmq
+        host: ${_param:single_address}
+        port: 5672
+        user: openstack
+        password: ${_param:rabbitmq_openstack_password}
+        virtual_host: '/openstack'
+        ha_queues: true
       cache:
         engine: memcached
-        members: 
+        members:
         - host: localhost
           port: 11211

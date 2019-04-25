@@ -1,0 +1,14 @@
+{%- from "keystone/map.jinja" import server with context %}
+{%- if server is defined and server.get('enabled', False) %}
+remote_agent:
+  input:
+    openstack:
+      interval: '1m'
+      project: "{{ server.admin_tenant }}"
+      tenant: "{{ server.admin_tenant }}"
+      region: "{{ server.region }}"
+      username: "{{ server.admin_name }}"
+      password: "{{ server.admin_password }}"
+      identity_endpoint: "http://{{ server.bind.private_address|replace('0.0.0.0', '127.0.0.1') }}:{{ server.bind.private_port }}/v{% if server.get('api_version', 2)|int == 2 %}2.0{% else %}3{% endif %}"
+      monitor_agents: "true"
+{%- endif %}
