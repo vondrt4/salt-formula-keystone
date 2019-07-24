@@ -745,14 +745,14 @@ cache_time = 43200
 # Deprecated group/name - [DEFAULT]/public_workers
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
-#public_workers = <None>
+public_workers = 2
 
 # The number of worker processes to serve the admin eventlet application.
 # Defaults to number of CPUs (minimum of 2). (integer value)
 # Deprecated group/name - [DEFAULT]/admin_workers
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
-#admin_workers = <None>
+admin_workers = 2
 
 # The IP address of the network interface for the public service to listen on.
 # (string value)
@@ -2143,7 +2143,7 @@ driver = memcache_pool
 
 # Toggle for token system caching. This has no effect unless global caching is
 # enabled. (boolean value)
-caching = true
+caching = false
 
 # Time to cache tokens (in seconds). This has no effect unless global and token
 # caching are enabled. (integer value)
